@@ -21,9 +21,14 @@
  */
 package org.jboss.libra;
 
+import org.jboss.libra.util.ReflectionLibraVisitor;
+import org.jboss.libra.util.VisitationException;
+
 import java.lang.instrument.Instrumentation;
 
 /**
+ * The Scales of Astraea with which objects can be weighed.
+ *
  * @author <a href="mailto:cdewolf@redhat.com">Carlo de Wolf</a>
  */
 public class Libra {
@@ -33,6 +38,23 @@ public class Libra {
         premain(args, inst);
     }
 
+    public static long getDeepObjectSize(Object obj) throws LibraException {
+        return getDeepObjectSize(obj, ReflectionLibraVisitor.INSTANCE);
+    }
+
+    public static long getDeepObjectSize(Object obj, LibraVisitor visitor) throws LibraException {
+        try {
+            return visitor.visit(LibraObjectVisitor.INSTANCE, obj);
+        } catch (VisitationException e) {
+            throw new LibraException(e);
+        }
+    }
+
+    /**
+     * @see Instrumentation#getObjectSize(Object) 
+     * @param obj the object to size
+     * @return an implementation-specific approximation of the amount of storage consumed by the specified object
+     */
     public static long getObjectSize(Object obj) {
         if (globalInstr == null) {
             LibraAttacher.attach();

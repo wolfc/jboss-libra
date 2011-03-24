@@ -34,6 +34,22 @@
                 </configuration>
             </plugin>
             <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.7.1</version>
+                <configuration>
+                    <!-- I don't want target/classes on the CP, that's silly. I want the artifact. -->
+                    <classesDirectory>target/${project.build.finalName}.${project.packaging}</classesDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
