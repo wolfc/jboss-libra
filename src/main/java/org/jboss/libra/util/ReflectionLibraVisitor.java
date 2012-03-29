@@ -21,9 +21,10 @@
  */
 package org.jboss.libra.util;
 
-import org.jboss.libra.LibraVisitor;
-
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
+import org.jboss.libra.LibraVisitor;
 
 /**
  * @author <a href="mailto:cdewolf@redhat.com">Carlo de Wolf</a>
@@ -38,9 +39,14 @@ public class ReflectionLibraVisitor implements LibraVisitor {
         try {
             Field declaredFields[] = cls.getDeclaredFields();
             for (Field field : declaredFields) {
+                if (Modifier.isStatic(field.getModifiers()))
+                    continue;
                 field.setAccessible(true);
                 Object fieldValue = field.get(obj);
-                size += visit(visitor, fieldValue);
+                if (field.getType().isPrimitive())
+                    size += visitor.visit(fieldValue);
+                else if (fieldValue != null)
+                    size += visit(visitor, fieldValue);
             }
             return size;
         }

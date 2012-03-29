@@ -21,11 +21,13 @@
  */
 package org.jboss.libra.basic;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+
 import org.jboss.libra.Libra;
 import org.jboss.libra.LibraException;
 import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:cdewolf@redhat.com">Carlo de Wolf</a>
@@ -50,5 +52,12 @@ public class BasicITCase {
         two.b = new byte[1024];
         long size = Libra.getDeepObjectSize(two);
         assertTrue(size >= 2048);
+    }
+
+    @Test
+    public void testHashMap() throws LibraException {
+        // if it does give a weird exception, we're good
+        long size = Libra.getDeepObjectSize(new HashMap());
+        assertTrue(size > 0);
     }
 }
