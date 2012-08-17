@@ -26,3 +26,8 @@ Libra will be initialized through the Java Agent mechanism.
     java -cp $JAVA_HOME/lib/tools.jar MyMain
 
 Libra will initialize itself through the Attach API.
+
+Usage in AS 7
+-------------
+
+For usage in AS 7 please refer to [How-To: use Libra in AS 7](https://github.com/wolfc/jboss-libra/wiki/How-To:-use-Libra-in-AS-7).
