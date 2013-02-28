@@ -25,6 +25,7 @@ import org.jboss.libra.util.ReflectionLibraVisitor;
 import org.jboss.libra.util.VisitationException;
 
 import java.lang.instrument.Instrumentation;
+import java.util.LinkedList;
 
 /**
  * The Scales of Astraea with which objects can be weighed.
@@ -44,7 +45,7 @@ public class Libra {
 
     public static long getDeepObjectSize(Object obj, LibraVisitor visitor) throws LibraException {
         try {
-            return visitor.visit(LibraObjectVisitor.INSTANCE, obj);
+            return visitor.visit(LibraObjectVisitor.INSTANCE, obj, new LinkedList<Object>());
         } catch (VisitationException e) {
             throw new LibraException(e);
         }
