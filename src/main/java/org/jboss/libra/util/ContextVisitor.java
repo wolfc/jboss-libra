@@ -21,11 +21,9 @@
  */
 package org.jboss.libra.util;
 
-import java.util.LinkedList;
-
 /**
  * @author <a href="mailto:cdewolf@redhat.com">Carlo de Wolf</a>
  */
 public interface ContextVisitor<R, C, T> {
-    R visit(C context, T target, LinkedList<Object> parentChine) throws VisitationException;
+    R visit(C context, T target) throws VisitationException;
 }
