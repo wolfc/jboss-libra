@@ -23,7 +23,7 @@ package org.jboss.libra.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.LinkedList;
+import java.util.IdentityHashMap;
 
 import org.jboss.libra.LibraVisitor;
 
@@ -31,15 +31,14 @@ import org.jboss.libra.LibraVisitor;
  * @author <a href="mailto:cdewolf@redhat.com">Carlo de Wolf</a>
  */
 public class ReflectionLibraVisitor implements LibraVisitor {
-    //public static final ReflectionLibraVisitor INSTANCE = new ReflectionLibraVisitor();
+    public static final ReflectionLibraVisitor INSTANCE = new ReflectionLibraVisitor();
 
     @Override
     public Long visit(Visitor<Long, Object> visitor, Object obj) throws VisitationException {
-        return visit(visitor, obj, new LinkedList<Object>());
+        return visit(visitor, obj, new IdentityHashMap<Object, Object>());
     }
-    
-    
-    private Long visit(Visitor<Long, Object> visitor, Object obj, LinkedList<Object> parentChine) throws VisitationException {
+
+    private Long visit(Visitor<Long, Object> visitor, Object obj, IdentityHashMap<Object, Object> visited) throws VisitationException {
         final Class<?> cls = obj.getClass();
         long size = visitor.visit(obj);
         try {
@@ -49,23 +48,20 @@ public class ReflectionLibraVisitor implements LibraVisitor {
                     continue;
                 field.setAccessible(true);
                 Object fieldValue = field.get(obj);
-                if (field.getType().isPrimitive()) {
+                if (field.getType().isPrimitive())
                     size += visitor.visit(fieldValue);
-                } else if (fieldValue instanceof String) {
-                    size += ((String) fieldValue).length();
-                } else if (fieldValue != null) {     
-                    if (parentChine.contains(fieldValue)) { 
+                else if (fieldValue != null) {
+                    if (visited.containsKey(fieldValue)) {
                         continue;
                     } else {
-                        parentChine.add(fieldValue);
-                        size += visit(visitor, fieldValue, parentChine);
+                        visited.put(fieldValue, fieldValue);
+                        size += visit(visitor, fieldValue, visited);
                     }
-                } 
+                }
             }
             return size;
-        } catch (IllegalAccessException e) {
-            throw new VisitationException(e);
-        } catch (StackOverflowError e) {
+        }
+        catch (IllegalAccessException e) {
             throw new VisitationException(e);
         }
     }
