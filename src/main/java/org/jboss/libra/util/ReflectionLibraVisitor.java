@@ -23,6 +23,7 @@ package org.jboss.libra.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.IdentityHashMap;
 
 import org.jboss.libra.LibraVisitor;
 
@@ -34,6 +35,10 @@ public class ReflectionLibraVisitor implements LibraVisitor {
 
     @Override
     public Long visit(Visitor<Long, Object> visitor, Object obj) throws VisitationException {
+        return visit(visitor, obj, new IdentityHashMap<Object, Object>());
+    }
+
+    private Long visit(Visitor<Long, Object> visitor, Object obj, IdentityHashMap<Object, Object> visited) throws VisitationException {
         final Class<?> cls = obj.getClass();
         long size = visitor.visit(obj);
         try {
@@ -45,8 +50,14 @@ public class ReflectionLibraVisitor implements LibraVisitor {
                 Object fieldValue = field.get(obj);
                 if (field.getType().isPrimitive())
                     size += visitor.visit(fieldValue);
-                else if (fieldValue != null)
-                    size += visit(visitor, fieldValue);
+                else if (fieldValue != null) {
+                    if (visited.containsKey(fieldValue)) {
+                        continue;
+                    } else {
+                        visited.put(fieldValue, fieldValue);
+                        size += visit(visitor, fieldValue, visited);
+                    }
+                }
             }
             return size;
         }
