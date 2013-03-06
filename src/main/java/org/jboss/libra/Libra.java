@@ -39,7 +39,7 @@ public class Libra {
     }
 
     public static long getDeepObjectSize(Object obj) throws LibraException {
-        return getDeepObjectSize(obj, ReflectionLibraVisitor.INSTANCE);
+        return getDeepObjectSize(obj, new ReflectionLibraVisitor());
     }
 
     public static long getDeepObjectSize(Object obj, LibraVisitor visitor) throws LibraException {
