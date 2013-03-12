@@ -38,6 +38,17 @@ public class Libra {
         premain(args, inst);
     }
 
+    /**
+     * Returns an implementation-specific approximation of the amount of storage consumed by
+     * the specified object graph.
+     *
+     * The method traverses each object in the <i>object graph</i> once and aggregates the
+     * amount of storage consumed by these objects.
+     *
+     * @see Instrumentation#getObjectSize(Object)
+     * @param obj the object graph starting point to size
+     * @return an implementation-specific approximation of the amount of storage consumed by the specified object
+     */
     public static long getDeepObjectSize(Object obj) throws LibraException {
         return getDeepObjectSize(obj, ReflectionLibraVisitor.INSTANCE);
     }
